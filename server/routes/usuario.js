@@ -2,12 +2,12 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const _ = require('underscore');
 const Usuario = require('../models/usuario');
-
+const { verificaToken, verificaRole } = require('../middlewares/autenticacion');
 
 const app = express();
 
 
-app.get('/usuario', (req, res) => {
+app.get('/usuario', verificaToken, (req, res) => {
 
     let from = req.query.from || 0;
     from = Number(from);
@@ -41,7 +41,7 @@ app.get('/usuario', (req, res) => {
 
 });
 
-app.post('/usuario', (req, res) => {
+app.post('/usuario', [verificaToken, verificaRole], (req, res) => {
 
     let body = req.body;
 
@@ -70,7 +70,7 @@ app.post('/usuario', (req, res) => {
 
 });
 
-app.put('/usuario/:id', (req, res) => {
+app.put('/usuario/:id', [verificaToken, verificaRole], (req, res) => {
 
     let id = req.params.id;
     let body = _.pick(req.body, ['nombre', 'email', 'img', 'role', 'estado']);
@@ -93,7 +93,7 @@ app.put('/usuario/:id', (req, res) => {
 
 });
 
-app.delete('/usuario/:id', (req, res) => {
+app.delete('/usuario/:id', [verificaToken, verificaRole], (req, res) => {
 
     let id = req.params.id;
 
@@ -112,30 +112,6 @@ app.delete('/usuario/:id', (req, res) => {
         })
 
     });
-    // Usuario.findByIdAndDelete(id, (err, usuario) => {
-
-    //     if (err) {
-    //         return res.status(400).json({
-    //             ok: false,
-    //             err
-    //         });
-    //     }
-
-    //     if (!usuario) {
-    //         return res.status(400).json({
-    //             ok: false,
-    //             err: {
-    //                 message: 'Usuario no encontrado'
-    //             }
-    //         })
-    //     }
-
-    //     res.json({
-    //         ok: true,
-    //         usuario
-    //     })
-
-    // })
 
 });
 
